@@ -167,3 +167,54 @@ def test_three_completed_rounds_cannot_start_a_fourth(client: TestClient) -> Non
                 db, conversation=conversation, actor=db.get(Agent, bob_agent.id), action=_response("QUESTION", alice_agent.id)
             )
         assert turn_limit.value.code == "TURN_LIMIT_REACHED"
+
+
+def test_humans_confirm_mutual_agent_intent_through_api(client: TestClient) -> None:
+    alice = _create_confirmed_participant(client, "Alice")
+    bob = _create_confirmed_participant(client, "Bob")
+    alice_agent = _agent_for(client, alice["participant"]["id"])
+    bob_agent = _agent_for(client, bob["participant"]["id"])
+    with client.app.state.database.session_factory() as db:
+        conversation = create_contact(
+            db,
+            activity_id="act_demo",
+            initiator=db.get(Agent, alice_agent.id),
+            recipient=db.get(Agent, bob_agent.id),
+            action=_contact(bob_agent.id),
+        )
+        conversation = apply_action(
+            db, conversation=conversation, actor=db.get(Agent, bob_agent.id), action=_response("ANSWER", alice_agent.id)
+        )
+        conversation = apply_action(
+            db, conversation=conversation, actor=db.get(Agent, bob_agent.id), action=_response("PROPOSE", alice_agent.id)
+        )
+        conversation = apply_action(
+            db, conversation=conversation, actor=db.get(Agent, alice_agent.id), action=_response("ACCEPT", bob_agent.id)
+        )
+        assert conversation.status == "MUTUAL_AGENT_INTENT"
+
+    alice_headers = {"Authorization": f"Bearer {alice['accessToken']}"}
+    bob_headers = {"Authorization": f"Bearer {bob['accessToken']}"}
+    view = client.get(f"/api/v1/conversations/{conversation.id}", headers=alice_headers)
+    assert view.status_code == 200
+    assert "privateReason" not in view.text
+    assert len(view.json()["messages"]) == 4
+    first_confirmation = client.post(
+        f"/api/v1/conversations/{conversation.id}/human-confirmations",
+        headers=alice_headers,
+        json={"decision": "ACCEPT"},
+    )
+    assert first_confirmation.status_code == 200
+    assert first_confirmation.json()["status"] == "MUTUAL_AGENT_INTENT"
+    second_confirmation = client.post(
+        f"/api/v1/conversations/{conversation.id}/human-confirmations",
+        headers=bob_headers,
+        json={"decision": "ACCEPT"},
+    )
+    assert second_confirmation.status_code == 200
+    assert second_confirmation.json()["status"] == "CONNECTED"
+    intents = client.get(
+        f"/api/v1/participants/{alice['participant']['id']}/candidate-intents", headers=alice_headers
+    )
+    assert intents.status_code == 200
+    assert intents.json()["items"][0]["status"] == "connected"

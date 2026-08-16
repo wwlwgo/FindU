@@ -73,3 +73,58 @@ class ProfileResponse(CamelModel):
     transcript_status: str
     items: list[ProfileItem]
     broadcast: str | None
+
+
+ConfirmationDecision = Literal["ACCEPT", "REJECT"]
+
+
+class HumanConfirmationRequest(CamelModel):
+    decision: ConfirmationDecision
+
+
+class ConfirmationStatusResponse(CamelModel):
+    my_decision: ConfirmationDecision | None
+    counterpart_decision: ConfirmationDecision | None
+    status: str
+
+
+class ConversationMessage(CamelModel):
+    round_number: int
+    sender_name: str
+    action: str
+    text: str
+
+
+class VisibleDecision(CamelModel):
+    actor: str
+    before: str
+    after: str
+    new_information: list[str]
+
+
+class ConversationResponse(CamelModel):
+    id: str
+    status: str
+    turn_count: int
+    max_turns: int
+    next_actor_agent_id: str | None
+    messages: list[ConversationMessage]
+    visible_decisions: list[VisibleDecision]
+
+
+class Counterpart(CamelModel):
+    display_name: str
+    public_offer: list[str]
+    public_need: list[str]
+
+
+class CandidateIntent(CamelModel):
+    conversation_id: str
+    counterpart: Counterpart
+    newly_confirmed: list[str]
+    open_questions: list[str]
+    status: str
+
+
+class CandidateIntentListResponse(CamelModel):
+    items: list[CandidateIntent]

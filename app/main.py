@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.api.participants import router as participants_router
+from app.api.conversations import router as conversations_router
 from app.api.health import router as health_router
 from app.core.config import Settings, get_settings
 from app.core.database import Database
@@ -56,6 +57,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.add_exception_handler(Exception, unhandled_error_handler)
     app.include_router(health_router)
     app.include_router(participants_router)
+    app.include_router(conversations_router)
 
     return app
 
