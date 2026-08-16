@@ -1,0 +1,5 @@
+.run-actions { display: flex; align-items: center; gap: 14px; }
+.sse-state { font: 10px var(--mono); color: var(--muted); white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+.sse-state span { width: 6px; height: 6px; border-radius: 50%; background: #a0a5a2; }
+.sse-state.connected span { background: var(--teal); }
+@media (max-width: 700px) { .run-actions { gap: 8px; } .sse-state { display: none; } }
