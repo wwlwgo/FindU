@@ -13,6 +13,8 @@ from app.schemas.participants import (
     ConversationResponse,
     Counterpart,
     HumanConfirmationRequest,
+    MyDecision,
+    MyDecisionResponse,
     VisibleDecision,
 )
 from app.services.confirmations import confirmation_status, participant_agent_for_conversation, submit_confirmation
@@ -77,6 +79,31 @@ def get_conversation(
     participant: Participant = Depends(get_current_participant),
 ) -> ConversationResponse:
     return _conversation_response(db, _visible_conversation(db, participant, conversation_id))
+
+
+@router.get("/conversations/{conversation_id}/my-decision", response_model=MyDecisionResponse)
+def get_my_decision(
+    conversation_id: str,
+    db: Session = Depends(get_db),
+    participant: Participant = Depends(get_current_participant),
+) -> MyDecisionResponse:
+    conversation = _visible_conversation(db, participant, conversation_id)
+    agent = participant_agent_for_conversation(db, participant_id=participant.id, conversation=conversation)
+    decisions = db.scalars(
+        select(AgentDecision)
+        .where(AgentDecision.conversation_id == conversation.id, AgentDecision.agent_id == agent.id)
+        .order_by(AgentDecision.created_at, AgentDecision.id)
+    )
+    return MyDecisionResponse(decisions=[
+        MyDecision(
+            before=decision.decision_before,
+            after=decision.decision_after,
+            missing_information=decision.missing_information_json,
+            new_information=decision.new_information_json,
+            private_reason=decision.private_reason,
+        )
+        for decision in decisions
+    ])
 
 
 @router.get("/me/conversations", response_model=list[ConversationResponse])

@@ -112,6 +112,18 @@ class ConversationResponse(CamelModel):
     visible_decisions: list[VisibleDecision]
 
 
+class MyDecision(CamelModel):
+    before: str
+    after: str
+    missing_information: list[str]
+    new_information: list[str]
+    private_reason: str
+
+
+class MyDecisionResponse(CamelModel):
+    decisions: list[MyDecision]
+
+
 class Counterpart(CamelModel):
     display_name: str
     public_offer: list[str]

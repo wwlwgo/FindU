@@ -199,6 +199,11 @@ def test_humans_confirm_mutual_agent_intent_through_api(client: TestClient) -> N
     assert view.status_code == 200
     assert "privateReason" not in view.text
     assert len(view.json()["messages"]) == 4
+    alice_debug = client.get(f"/api/v1/conversations/{conversation.id}/my-decision", headers=alice_headers)
+    bob_debug = client.get(f"/api/v1/conversations/{conversation.id}/my-decision", headers=bob_headers)
+    assert alice_debug.status_code == 200 and bob_debug.status_code == 200
+    assert bob_debug.json()["decisions"]
+    assert alice_debug.json()["decisions"]
     first_confirmation = client.post(
         f"/api/v1/conversations/{conversation.id}/human-confirmations",
         headers=alice_headers,
