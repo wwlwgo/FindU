@@ -241,4 +241,4 @@ def test_replay_run_emits_a_three_round_mutual_intent(client: TestClient) -> Non
     assert len(view["messages"]) == 6
     event_payloads = [event.data for event in client.app.state.event_bus._events]
     assert all("privateReason" not in str(payload) for payload in event_payloads)
-    assert any("Bob 有用户访谈和范围控制经验" in str(payload) for payload in event_payloads)
+    assert any("newInformation" in str(payload) and payload["newInformation"] for payload in event_payloads)

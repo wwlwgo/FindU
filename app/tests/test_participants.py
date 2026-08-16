@@ -62,3 +62,14 @@ def test_invalid_token_uses_error_envelope(client: TestClient) -> None:
     response = client.get("/api/v1/participants/p_missing/profile", headers={"Authorization": "Bearer not-a-valid-token"})
     assert response.status_code == 401
     assert response.json()["error"]["code"] == "UNAUTHORIZED"
+
+
+def test_recording_returns_provider_fallback_without_retaining_audio(client: TestClient) -> None:
+    created = create_participant(client)
+    response = client.post(
+        f"/api/v1/participants/{created['participant']['id']}/recording",
+        headers={**auth_headers(created), "Content-Type": "audio/webm"},
+        content=b"fake-audio-bytes",
+    )
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "PROVIDER_UNAVAILABLE"

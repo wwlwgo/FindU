@@ -2,12 +2,12 @@ from uuid import uuid4
 
 from fastapi import APIRouter, Depends, Header, Request
 from fastapi.responses import StreamingResponse
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_current_participant, get_db
 from app.core.errors import ApiError
-from app.models import Activity, Agent, Conversation, Participant, Profile
+from app.models import Activity, Agent, Conversation, Message, Participant, Profile
 from app.schemas.participants import Broadcast, BroadcastListResponse, RunRequest, RunResponse
 from app.services.events import EventBus, encode_sse
 from app.services.replay import run_next_replay_step
@@ -61,7 +61,7 @@ def run_agent(
     participant: Participant = Depends(get_current_participant),
 ) -> RunResponse:
     _require_activity_participant(db, activity_id, participant)
-    if payload.mode != "replay" or not payload.replay_track_id:
+    if not payload.replay_track_id:
         raise ApiError("PROVIDER_UNAVAILABLE", "Live provider is not configured; use replay mode", 503)
     agent = db.scalar(select(Agent).where(Agent.participant_id == participant.id))
     if agent is None:
@@ -75,7 +75,16 @@ def run_agent(
         raise ApiError("NOT_FOUND", "Resource not found", 404)
     bus: EventBus = request.app.state.event_bus
     visible_to = {agent.participant_id, counterpart.participant_id}
-    round_number = conversation.turn_count + (0 if action.action in {"ANSWER", "ACCEPT", "DECLINE"} else 1)
+    if payload.mode == "live":
+        bus.publish(
+            event_type="run.fallback", conversation_id=conversation.id,
+            data={"code": "PROVIDER_UNAVAILABLE", "message": "Live provider unavailable; replay used"},
+            visible_to=visible_to,
+        )
+    message_count = db.scalar(
+        select(func.count()).select_from(Message).where(Message.conversation_id == conversation.id)
+    ) or 1
+    round_number = (message_count - 1) // 2 + 1
     sender_agent = agent if action.recipient_agent_id == counterpart.id else counterpart
     sender = db.get(Participant, sender_agent.participant_id)
     bus.publish(

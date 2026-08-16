@@ -1,7 +1,7 @@
 import hashlib
 import secrets
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_db, require_owned_participant
@@ -19,8 +19,27 @@ from app.schemas.participants import (
     UpdateProfileResponse,
 )
 from app.services.profile import create_draft, save_confirmed_profile
+from app.providers.base import ProviderUnavailable
+from app.providers.fallbacks import transcribe_or_raise
 
 router = APIRouter(prefix="/api/v1", tags=["participants"])
+
+
+@router.post("/participants/{participant_id}/recording")
+async def upload_recording(
+    participant_id: str,
+    request: Request,
+    _: Participant = Depends(require_owned_participant),
+) -> None:
+    audio = await request.body()
+    try:
+        transcribe_or_raise(audio, request.headers.get("content-type", "application/octet-stream"))
+    except ProviderUnavailable as error:
+        raise ApiError(
+            "PROVIDER_UNAVAILABLE",
+            "Speech provider unavailable; use the preset transcript fallback",
+            503,
+        ) from error
 
 
 @router.post("/participants", response_model=CreateParticipantResponse, status_code=status.HTTP_201_CREATED)

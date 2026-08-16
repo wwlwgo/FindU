@@ -23,7 +23,12 @@ def load_track(track_id: str) -> dict[str, object]:
 
 def run_next_replay_step(db: Session, *, activity_id: str, actor: Agent, track_id: str) -> tuple[Conversation, AgentAction]:
     track = load_track(track_id)
-    counterpart = db.get(Agent, track["counterpartAgentId"])
+    participants = track.get("participants", [])
+    self_alias = "agent_alice" if "agent_alice" in participants else actor.id
+    counterpart_id = track.get("counterpartAgentId")
+    if counterpart_id is None:
+        counterpart_id = next((item for item in participants if item != self_alias), None)
+    counterpart = db.get(Agent, counterpart_id) if counterpart_id else None
     if counterpart is None:
         raise ApiError("PROVIDER_UNAVAILABLE", "Replay counterpart is unavailable", 503)
     conversation = db.scalar(select(Conversation).where(
@@ -37,7 +42,7 @@ def run_next_replay_step(db: Session, *, activity_id: str, actor: Agent, track_i
     if event_index >= len(events):
         raise ApiError("INVALID_STATE", "Replay track is complete", 409)
     event = events[event_index]
-    event_actor = actor if event["actor"] == "self" else counterpart
+    event_actor = actor if event.get("actor") == "self" or event.get("senderAgentId") == self_alias else counterpart
     recipient = counterpart if event_actor.id == actor.id else actor
     action = AgentAction(
         action=event["action"], recipient_agent_id=recipient.id, public_message=event["publicMessage"],
