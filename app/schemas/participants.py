@@ -128,3 +128,27 @@ class CandidateIntent(CamelModel):
 
 class CandidateIntentListResponse(CamelModel):
     items: list[CandidateIntent]
+
+
+class Broadcast(CamelModel):
+    agent_id: str
+    display_name: str
+    message: str
+    contact_status: Literal["available", "busy"]
+
+
+class BroadcastListResponse(CamelModel):
+    items: list[Broadcast]
+    outbound_contact_count: int
+    max_outbound_contacts: int
+
+
+class RunRequest(CamelModel):
+    mode: Literal["live", "replay"]
+    replay_track_id: str | None = Field(default=None, max_length=100)
+    max_steps: Literal[1] = 1
+
+
+class RunResponse(CamelModel):
+    run_id: str
+    status: Literal["queued"]

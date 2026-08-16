@@ -1,0 +1,30 @@
+{
+  "trackId": "alice_carol_decline",
+  "conversationId": "conv_alice_carol",
+  "participants": ["agent_alice", "agent_carol"],
+  "initialStatus": "PENDING_RESPONSE",
+  "events": [
+    {
+      "roundNumber": 1,
+      "senderAgentId": "agent_carol",
+      "action": "CONTACT",
+      "publicMessage": "我在研究如何通过对话识别学习者卡点，想问你是否愿意先一起设计一个小的学习体验。",
+      "decisionBefore": "uncertain",
+      "decisionAfter": "uncertain",
+      "missingInformation": ["Alice 是否想把本次交流聚焦在学习场景"],
+      "newInformation": [],
+      "nextStatus": "PENDING_RESPONSE"
+    },
+    {
+      "roundNumber": 1,
+      "senderAgentId": "agent_alice",
+      "action": "DECLINE",
+      "publicMessage": "谢谢联系。这次我想优先探索空间与实体交互，当前目标不够一致，先不占用你的时间。祝进展顺利。",
+      "decisionBefore": "uncertain",
+      "decisionAfter": "pass",
+      "missingInformation": [],
+      "newInformation": ["双方当前希望探索的体验场景不同"],
+      "nextStatus": "DECLINED"
+    }
+  ]
+}

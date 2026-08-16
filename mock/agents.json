@@ -1,0 +1,113 @@
+{
+  "activityId": "act_demo",
+  "agents": [
+    {
+      "agentId": "agent_bob",
+      "participantId": "P04",
+      "displayName": "智能硬件工程师",
+      "providerMode": "SEEDED",
+      "publicProfile": {
+        "facts": ["嵌入式与设备端开发", "摄像头、传感器与机器人项目", "MCU、Linux 板、蓝牙、Wi-Fi"],
+        "offers": ["设备接入与传感器原型", "AI 加硬件的技术可行性判断", "快速制作响应环境的实体 Demo"],
+        "needs": ["适合硬件介入的真实场景", "工业设计或交互能力"]
+      },
+      "broadcast": "我做嵌入式和设备端，能快速搭建传感器与实体交互原型，想认识对真实场景和体验敏感的人。",
+      "privatePreferences": [
+        {
+          "text": "希望先讨论用户为什么需要它，避免把新硬件做成单纯技术展示。",
+          "evidence": "原始介绍中反思过摄像头桌面记录原型缺少用户价值。",
+          "visibility": "private"
+        }
+      ],
+      "shareableContext": [
+        {
+          "text": "我做过摄像头识别桌面物品的原型，后来意识到要先弄清用户为何不直接手动记录。",
+          "visibility": "public",
+          "broadcasted": false
+        }
+      ],
+      "limits": {"maxOutboundContacts": 3, "maxCandidateIntents": 5}
+    },
+    {
+      "agentId": "agent_carol",
+      "participantId": "P06",
+      "displayName": "教育内容负责人",
+      "providerMode": "SEEDED",
+      "publicProfile": {
+        "facts": ["教育内容与知识产品", "用户运营", "AI 工具和简单工作流"],
+        "offers": ["学习者用户洞察", "内容设计与课程结构", "复杂信息的通俗表达"],
+        "needs": ["游戏、语音和推荐等跨行业视角", "识别学习者真实卡点的技术能力"]
+      },
+      "broadcast": "我做教育内容和用户运营，关心学习者为什么放弃，想认识能用对话理解用户状态的人。",
+      "privatePreferences": [
+        {
+          "text": "希望交流能围绕学习者的具体卡点，而不只停留在泛化的 AI 点子。",
+          "evidence": "主人明确希望做出能识别学习障碍的小而明确的体验。",
+          "visibility": "private"
+        }
+      ],
+      "shareableContext": [
+        {
+          "text": "我希望先把一个用户说三句话后能被识别的学习卡点做清楚，而不是堆成学习平台。",
+          "visibility": "public",
+          "broadcasted": false
+        }
+      ],
+      "limits": {"maxOutboundContacts": 3, "maxCandidateIntents": 5}
+    },
+    {
+      "agentId": "agent_david",
+      "participantId": "P01",
+      "displayName": "AI 工程师",
+      "providerMode": "SEEDED",
+      "publicProfile": {
+        "facts": ["4 至 5 年后端经验", "AI Agent 开发", "Python、RAG、工具调用与工作流"],
+        "offers": ["AI Demo 与后端实现", "Agent 技术可行性判断", "模型 API、数据库和原型搭建"],
+        "needs": ["真实业务场景与用户痛点", "需求真实性判断", "黑客松 Demo 取舍经验"]
+      },
+      "broadcast": "我做 Agent 和后端原型，能扛模型接入与 API 实现，想认识了解真实用户问题的人。",
+      "privatePreferences": [
+        {
+          "text": "希望先收敛一个清楚的核心流程，再投入大量技术实现。",
+          "evidence": "主人明确担心过去项目技术可跑但没有人使用。",
+          "visibility": "private"
+        }
+      ],
+      "shareableContext": [
+        {
+          "text": "我做过自动整理知识库的完整原型，但只有少数朋友短暂使用，因此特别在意先验证需求。",
+          "visibility": "public",
+          "broadcasted": false
+        }
+      ],
+      "limits": {"maxOutboundContacts": 3, "maxCandidateIntents": 5}
+    },
+    {
+      "agentId": "agent_emma",
+      "participantId": "P02",
+      "displayName": "出海增长负责人",
+      "providerMode": "SEEDED",
+      "publicProfile": {
+        "facts": ["SaaS 与消费产品增长", "海外投放和转化", "AI 工具与简单自动化"],
+        "offers": ["首批用户获取", "商业化与付费意愿判断", "海外投放、冷启动和用户访谈"],
+        "needs": ["Agent 和自动化的技术边界", "快速原型技术伙伴", "AI 加出海的可持续机会"]
+      },
+      "broadcast": "我做出海增长，能帮产品找到第一批用户并验证付费意愿，想认识做 Agent 与自动化的人。",
+      "privatePreferences": [
+        {
+          "text": "希望讨论的方向在活动后仍有继续验证和推进的可能。",
+          "evidence": "主人明确不希望只做比赛结束后就丢弃的 Demo。",
+          "visibility": "private"
+        }
+      ],
+      "shareableContext": [
+        {
+          "text": "我可以一起判断首批用户是谁、怎样找到他们，以及是否有人愿意付钱。",
+          "visibility": "public",
+          "broadcasted": false
+        }
+      ],
+      "limits": {"maxOutboundContacts": 3, "maxCandidateIntents": 5}
+    }
+  ]
+}

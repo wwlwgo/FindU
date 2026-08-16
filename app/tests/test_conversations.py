@@ -218,3 +218,27 @@ def test_humans_confirm_mutual_agent_intent_through_api(client: TestClient) -> N
     )
     assert intents.status_code == 200
     assert intents.json()["items"][0]["status"] == "connected"
+
+
+def test_replay_run_emits_a_three_round_mutual_intent(client: TestClient) -> None:
+    alice = _create_confirmed_participant(client, "Alice")
+    headers = {"Authorization": f"Bearer {alice['accessToken']}"}
+    broadcasts = client.get("/api/v1/activities/act_demo/broadcasts", headers=headers)
+    assert broadcasts.status_code == 200
+    assert any(item["agentId"] == "agent_bob" for item in broadcasts.json()["items"])
+    for _ in range(6):
+        response = client.post(
+            "/api/v1/activities/act_demo/runs",
+            headers=headers,
+            json={"mode": "replay", "replayTrackId": "alice_bob_mutual_intent", "maxSteps": 1},
+        )
+        assert response.status_code == 202
+    conversations = client.get("/api/v1/me/conversations", headers=headers)
+    assert conversations.status_code == 200
+    view = conversations.json()[0]
+    assert view["status"] == "MUTUAL_AGENT_INTENT"
+    assert view["turnCount"] == 3
+    assert len(view["messages"]) == 6
+    event_payloads = [event.data for event in client.app.state.event_bus._events]
+    assert all("privateReason" not in str(payload) for payload in event_payloads)
+    assert any("Bob 有用户访谈和范围控制经验" in str(payload) for payload in event_payloads)

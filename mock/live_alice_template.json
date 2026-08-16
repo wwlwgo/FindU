@@ -1,0 +1,27 @@
+{
+  "agentId": "agent_alice",
+  "participantId": "P03",
+  "displayName": "交互设计师",
+  "providerMode": "LIVE",
+  "publicProfile": {
+    "facts": ["交互设计", "视觉、motion 与互动装置", "声音和空间体验"],
+    "offers": ["交互体验与现场展示设计", "把技术 Demo 转为易理解的体验", "非传统 AI 产品形态创意"],
+    "needs": ["实时语音和多模态技术能力", "硬件或实时交互实现伙伴"]
+  },
+  "broadcast": "我做空间、声音和互动体验，能把技术 Demo 变成第一次看到就会玩的现场体验，想认识实时语音或硬件伙伴。",
+  "privatePreferences": [
+    {
+      "text": "希望探索体验驱动的非工具型产品，不想把交流投入到纯效率工具方向。",
+      "evidence": "主人明确表示不想再做效率工具，更在意独特现场体验。",
+      "visibility": "private"
+    }
+  ],
+  "shareableContext": [
+    {
+      "text": "我以前用过 Processing 和 Arduino，也做过互动装置，愿意先用简单原型验证人与环境如何互动。",
+      "visibility": "public",
+      "broadcasted": false
+    }
+  ],
+  "limits": {"maxOutboundContacts": 3, "maxCandidateIntents": 5}
+}
